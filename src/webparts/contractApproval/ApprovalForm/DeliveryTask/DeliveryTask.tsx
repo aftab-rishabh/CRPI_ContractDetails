@@ -1,8 +1,6 @@
 import * as React from "react";
 import styles from "./DeliveryTaskFormWebPart.module.scss";
-import {
-  PrimaryButton,
-} from "office-ui-fabric-react";
+import { PrimaryButton } from "office-ui-fabric-react";
 import { Web } from "@pnp/sp/presets/all";
 import "@pnp/sp/lists";
 import "@pnp/sp/items";
@@ -17,7 +15,7 @@ let cssURL =
   "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
 SPComponentLoader.loadCss(cssURL);
 SPComponentLoader.loadScript(
-  "https://ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js"
+  "https://ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js",
 );
 /**
  * Icon styles. Feel free to change them
@@ -30,16 +28,14 @@ export interface IDeliveryTaskProps {
   context: WebPartContext;
 }
 
-
 interface IQuestion {
-  Sequence : string,
-  Question : string,
-  ProjectID : string,
-  QuestionNumber : string,
-  Answer : string,
-  Comment : string
+  Sequence: string;
+  Question: string;
+  ProjectID: string;
+  QuestionNumber: string;
+  Answer: string;
+  Comment: string;
 }
-
 
 export interface IDeliveryTaskState {
   expanded: boolean;
@@ -48,13 +44,11 @@ export interface IDeliveryTaskState {
   RichtextData: IQuestion[];
 }
 
-
 // declare global {
 //   interface Window {
 //     componentInstance: DeliveryTask; // Replace `MyComponent` with your actual component type
 //   }
 // }
-
 
 export class DeliveryTask extends React.Component<
   IDeliveryTaskProps,
@@ -72,18 +66,16 @@ export class DeliveryTask extends React.Component<
         props.defaultCollapsed == null ? false : !props.defaultCollapsed,
       Items: [],
       HTML: [],
-      RichtextData: []
+      RichtextData: [],
     };
 
-    this.onTextChange = this.onTextChange.bind(this); 
-    this.setForm = this.setForm.bind(this); 
-    this.renderRichTextControl = this.renderRichTextControl.bind(this); 
+    this.onTextChange = this.onTextChange.bind(this);
+    this.setForm = this.setForm.bind(this);
+    this.renderRichTextControl = this.renderRichTextControl.bind(this);
     this.DelSubmitData = this.DelSubmitData.bind(this);
-    this.DelSubmitData1 = this.DelSubmitData1.bind(this); 
-    this.DelSubmitData2 = this.DelSubmitData2.bind(this); 
-    this.loadQuestions = this.loadQuestions.bind(this); 
-
-
+    this.DelSubmitData1 = this.DelSubmitData1.bind(this);
+    this.DelSubmitData2 = this.DelSubmitData2.bind(this);
+    this.loadQuestions = this.loadQuestions.bind(this);
   }
 
   public async componentDidMount() {
@@ -216,56 +208,55 @@ export class DeliveryTask extends React.Component<
     );
   }
 
-
-  public onTextChange(text: string, parentDivId: string){
-    
-  
-
-    this.setState(prevState => {
-    
-      const updatedRichtextData =  prevState.RichtextData.map(item => 
+  public onTextChange(text: string, parentDivId: string) {
+    this.setState((prevState) => {
+      const updatedRichtextData = prevState.RichtextData.map((item) =>
         item.QuestionNumber === parentDivId
-          ? { ...item, Comment: text.replace(/<\/?[^>]+(>|$)/g, "").replace(/&nbsp;/g, "").trim().length === 0 ? "" : text}  // Update the Comment field
-          : item
+          ? {
+              ...item,
+              Comment:
+                text
+                  .replace(/<\/?[^>]+(>|$)/g, "")
+                  .replace(/&nbsp;/g, "")
+                  .trim().length === 0
+                  ? ""
+                  : text,
+            } // Update the Comment field
+          : item,
       );
-     
+
       return { RichtextData: updatedRichtextData };
-    
     });
-  
 
     return text;
   }
 
-
-
   private renderRichTextControl(elementId: string) {
     const element = document.getElementById(elementId);
 
-    const item = this.state.RichtextData.find(item => item.QuestionNumber === elementId);
-  
-    const comment = item ? item.Comment : ''; // Returns the Comment if the item is found, otherwise an empty string
+    const item = this.state.RichtextData.find(
+      (item) => item.QuestionNumber === elementId,
+    );
 
+    const comment = item ? item.Comment : ""; // Returns the Comment if the item is found, otherwise an empty string
 
     if (element) {
       ReactDOM.render(
-        <RichText className={`${elementId}`} value={comment} onChange={(text)=> {
-          
-          let parentDivId = document.getElementById(elementId).getAttribute("id");
-          
-          return this.onTextChange(text,parentDivId);
-        
-        } }
+        <RichText
+          className={`${elementId}`}
+          value={comment}
+          onChange={(text) => {
+            let parentDivId = document
+              .getElementById(elementId)
+              .getAttribute("id");
+
+            return this.onTextChange(text, parentDivId);
+          }}
         />,
-        element
+        element,
       );
     }
   }
-
-
-
-
-
 
   private async setForm() {
     const itemID = new URLSearchParams(window.location.search).get("itemid");
@@ -278,21 +269,21 @@ export class DeliveryTask extends React.Component<
         for (var b = 0; b < data.length; b++) {
           var DELNo = data[b].QuestionNumber;
           $("#Answer" + DELNo).val(data[b].Answer);
-         
-         
-     if(data[b].Requirement.toLowerCase() == "IfYesNoCommentYes".toLowerCase() || data[b].Requirement.toLowerCase() == "IfYesNoCommentNo".toLowerCase() )
-{
-}
-else{ 
-          if (data[b].Comment !== null) {
-            $("#DelComment" + DELNo).show();
-            $("#DelComment" + DELNo).val(data[b].Comment);
+
+          if (
+            data[b].Requirement.toLowerCase() ==
+              "IfYesNoCommentYes".toLowerCase() ||
+            data[b].Requirement.toLowerCase() ==
+              "IfYesNoCommentNo".toLowerCase()
+          ) {
           } else {
-            $("#DelComment" + DELNo).hide();
+            if (data[b].Comment !== null) {
+              $("#DelComment" + DELNo).show();
+              $("#DelComment" + DELNo).val(data[b].Comment);
+            } else {
+              $("#DelComment" + DELNo).hide();
+            }
           }
-        }
-
-
         }
       })
       .then(async () => {
@@ -313,12 +304,8 @@ else{
   }
 
   private async loadQuestions() {
-
-
     const itemID = new URLSearchParams(window.location.search).get("itemid");
     let temp = false;
-
-
 
     let filterStr = "ProjectID eq '" + itemID + "'";
 
@@ -327,41 +314,40 @@ else{
       .items.filter(filterStr)
       .get()
       .then((data) => {
-
         if (data.length > 0) {
           temp = true;
         }
         for (let b = 0; b < data.length; b++) {
-
           let CommentVal = "";
 
-          if (data[b].Comment === null || data[b].Comment?.replace(/<\/?[^>]+(>|$)/g, "").replace(/&nbsp;/g, "").trim() === "") {
+          if (
+            data[b].Comment === null ||
+            data[b].Comment?.replace(/<\/?[^>]+(>|$)/g, "")
+              .replace(/&nbsp;/g, "")
+              .trim() === ""
+          ) {
             CommentVal = "";
           } else {
             CommentVal = `${data[b].Comment}`;
           }
 
-
-
-          this.setState(prevState => ({
-            RichtextData: [...prevState.RichtextData,
-            {
-              Sequence: ``,
-              Question: `${data[b].Title}`,
-              ProjectID: `${itemID}`,
-              QuestionNumber: `DelComment${data[b].QuestionNumber}`,
-              Answer: `${data[b].Answer}`,
-              Comment: CommentVal
-
-            }
-            ]
+          this.setState((prevState) => ({
+            RichtextData: [
+              ...prevState.RichtextData,
+              {
+                Sequence: ``,
+                Question: `${data[b].Title}`,
+                ProjectID: `${itemID}`,
+                QuestionNumber: `DelComment${data[b].QuestionNumber}`,
+                Answer: `${data[b].Answer}`,
+                Comment: CommentVal,
+              },
+            ],
           }));
-
-
         }
       });
 
-   await this.webURL.lists
+    await this.webURL.lists
       .getByTitle("FeedbackQuestions")
       .items.orderBy("QuestionNumber")
       .filter("Team eq 'Delivery'")
@@ -370,30 +356,22 @@ else{
       .then((item) => {
         var QueLength = item.length;
         for (var s = 0; s < QueLength; s++) {
-
-
-
-
-          if(temp){
-
-          }else {
-          
-            this.setState(prevState => ({
-              RichtextData:  [...prevState.RichtextData ,
+          if (temp) {
+          } else {
+            this.setState((prevState) => ({
+              RichtextData: [
+                ...prevState.RichtextData,
                 {
-                  Sequence : `${item[s].Sequence}`,
-                  Question : `${item[s].Question}`,
-                  ProjectID : `${itemID}`,
-                  QuestionNumber : `DelComment${item[s].QuestionNumber}`,
-                  Answer : ``,
-                  Comment : ``
-                }
-              ]
+                  Sequence: `${item[s].Sequence}`,
+                  Question: `${item[s].Question}`,
+                  ProjectID: `${itemID}`,
+                  QuestionNumber: `DelComment${item[s].QuestionNumber}`,
+                  Answer: ``,
+                  Comment: ``,
+                },
+              ],
             }));
-            
-          
           }
-
 
           var QuestionNumber = item[s].QuestionNumber;
           var lablecontrol = styles.lablecontrol;
@@ -401,11 +379,13 @@ else{
           var errorlable = styles.errorlable;
           var Questions = "";
 
-
-// Logic for IfYesNoComment starts
+          // Logic for IfYesNoComment starts
 
           if (
-            item[s].Requirement.toLowerCase() == "IfYesNoCommentYes".toLowerCase() ||  item[s].Requirement.toLowerCase() == "IfYesNoCommentNo".toLowerCase()
+            item[s].Requirement.toLowerCase() ==
+              "IfYesNoCommentYes".toLowerCase() ||
+            item[s].Requirement.toLowerCase() ==
+              "IfYesNoCommentNo".toLowerCase()
           ) {
             Questions +=
               '<label class="' +
@@ -431,21 +411,21 @@ else{
               '" style="display:none;" class="' +
               errorlable +
               '" for="Author">Please select the value from the drop-down.</span><br>' +
-             '<div id="DelComment' + QuestionNumber + '" class="' + styles.richTextContainer +'" ></div>'
-              +
+              '<div id="DelComment' +
+              QuestionNumber +
+              '" class="' +
+              styles.richTextContainer +
+              '" ></div>' +
               '<span id="DelCommentErr' +
               QuestionNumber +
               '" style="display:none;" class="' +
               errorlable +
               '" for="Author">This field is required.</span><br>';
-                        $("#Questions").append(Questions);
-                        this.renderRichTextControl(`DelComment${QuestionNumber}`);
+            $("#Questions").append(Questions);
+            this.renderRichTextControl(`DelComment${QuestionNumber}`);
           }
-          
+
           // Logic for IfYesNoComment Ends
-          
-
-
 
           if (
             item[s].Requirement.toLowerCase() == "IfNoComment".toLowerCase()
@@ -474,7 +454,11 @@ else{
               '" style="display:none;" class="' +
               errorlable +
               '" for="Author">Please select the value from the drop-down.</span><br>' +
-              '<div id="DelComment' + QuestionNumber + '" class="' + styles.richTextContainer +'" style="display: none;"></div>' +
+              '<div id="DelComment' +
+              QuestionNumber +
+              '" class="' +
+              styles.richTextContainer +
+              '" style="display: none;"></div>' +
               '<span id="DelCommentErr' +
               QuestionNumber +
               '" style="display:none;" class="' +
@@ -511,7 +495,11 @@ else{
               '" style="display:none;" class="' +
               errorlable +
               '" for="Author">Please select the value from the drop-down.</span><br>' +
-              '<div id="DelComment' + QuestionNumber + '" class="' + styles.richTextContainer +'" style="display: none;"></div>' +
+              '<div id="DelComment' +
+              QuestionNumber +
+              '" class="' +
+              styles.richTextContainer +
+              '" style="display: none;"></div>' +
               '<span id="DelCommentErr' +
               QuestionNumber +
               '" style="display:none;" class="' +
@@ -534,7 +522,11 @@ else{
               '"style="display:none">' +
               item[s].Requirement +
               "</span>" +
-              '<div id="DelComment' + QuestionNumber + '" class="' + styles.richTextContainer +'" style="display: block;"></div>' +
+              '<div id="DelComment' +
+              QuestionNumber +
+              '" class="' +
+              styles.richTextContainer +
+              '" style="display: block;"></div>' +
               '<span id="DelCommentErr' +
               QuestionNumber +
               '" style="display:none;" class="' +
@@ -602,20 +594,22 @@ else{
           }
 
           if (
-            item[s].Requirement.toLowerCase() == "IfYesNoCommentYes".toLowerCase()
+            item[s].Requirement.toLowerCase() ==
+            "IfYesNoCommentYes".toLowerCase()
           ) {
             this.IfYesNoCommentChange(QuestionNumber);
           }
 
           if (
-            item[s].Requirement.toLowerCase() == "IfYesNoCommentNo".toLowerCase()
+            item[s].Requirement.toLowerCase() ==
+            "IfYesNoCommentNo".toLowerCase()
           ) {
             this.IfYesNoCommentChange2(QuestionNumber);
           }
 
           if (item[s].Requirement.toLowerCase() == "textbox".toLowerCase()) {
             $("#Question" + QuestionNumber).append(
-              '<lable class="" style="color:red;">*</lable>'
+              '<lable class="" style="color:red;">*</lable>',
             );
           }
         }
@@ -624,60 +618,65 @@ else{
         this.setForm();
       });
 
-      console.log("Data after load question: ",this.state.RichtextData);
+    console.log("Data after load question: ", this.state.RichtextData);
   }
 
   private IfNoCommentChange(QuestionNumber) {
     var ChangeFunction = document.getElementById("Answer" + QuestionNumber);
     ChangeFunction.addEventListener("change", () =>
-      this.ShowCommentBoxOnNo(QuestionNumber)
+      this.ShowCommentBoxOnNo(QuestionNumber),
     );
   }
 
+  //************New changes*******************************************************/
 
-
-//************New changes*******************************************************/
-
-private IfYesNoCommentChange(QuestionNumber) {
-  document
-    .getElementById("Answer" + QuestionNumber)
-    .addEventListener("change", () =>
-      this.ShowCommentBoxOnYesNo(QuestionNumber)
-    );
-}
-
-
-private ShowCommentBoxOnYesNo(QuestionNumber) {
-  if ($("#Answer" + QuestionNumber).val() == "Yes") {
-    $("#DelComment" + QuestionNumber).find(".ql-editor").html("");
-    $("#DelComment" + QuestionNumber).find(".ql-editor").html("Not Applicable");
-  } else {
-    $("#DelComment" + QuestionNumber).find(".ql-editor").html("");
+  private IfYesNoCommentChange(QuestionNumber) {
+    document
+      .getElementById("Answer" + QuestionNumber)
+      .addEventListener("change", () =>
+        this.ShowCommentBoxOnYesNo(QuestionNumber),
+      );
   }
-}
 
-private IfYesNoCommentChange2(QuestionNumber) {
-  document
-    .getElementById("Answer" + QuestionNumber)
-    .addEventListener("change", () =>
-      this.ShowCommentBoxOnYesNo2(QuestionNumber)
-    );
-}
-
-
-private ShowCommentBoxOnYesNo2(QuestionNumber) {
-  if ($("#Answer" + QuestionNumber).val() == "No") {
-    $("#DelComment" + QuestionNumber).find(".ql-editor").html("");
-      $("#DelComment" + QuestionNumber).find(".ql-editor").html("Not Applicable");
+  private ShowCommentBoxOnYesNo(QuestionNumber) {
+    if ($("#Answer" + QuestionNumber).val() == "Yes") {
+      $("#DelComment" + QuestionNumber)
+        .find(".ql-editor")
+        .html("");
+      $("#DelComment" + QuestionNumber)
+        .find(".ql-editor")
+        .html("Not Applicable");
     } else {
-      $("#DelComment" + QuestionNumber).find(".ql-editor").html("");
+      $("#DelComment" + QuestionNumber)
+        .find(".ql-editor")
+        .html("");
     }
-}
+  }
 
+  private IfYesNoCommentChange2(QuestionNumber) {
+    document
+      .getElementById("Answer" + QuestionNumber)
+      .addEventListener("change", () =>
+        this.ShowCommentBoxOnYesNo2(QuestionNumber),
+      );
+  }
 
-//*******************************************************************/
+  private ShowCommentBoxOnYesNo2(QuestionNumber) {
+    if ($("#Answer" + QuestionNumber).val() == "No") {
+      $("#DelComment" + QuestionNumber)
+        .find(".ql-editor")
+        .html("");
+      $("#DelComment" + QuestionNumber)
+        .find(".ql-editor")
+        .html("Not Applicable");
+    } else {
+      $("#DelComment" + QuestionNumber)
+        .find(".ql-editor")
+        .html("");
+    }
+  }
 
-
+  //*******************************************************************/
 
   private ShowCommentBoxOnNo(QuestionNumber) {
     if ($("#Answer" + QuestionNumber).val() == "No") {
@@ -692,7 +691,7 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
   private IfYesCommentChange(QuestionNumber) {
     var ChangeFunction = document.getElementById("Answer" + QuestionNumber);
     ChangeFunction.addEventListener("change", () =>
-      this.ShowCommentBoxOnYes(QuestionNumber)
+      this.ShowCommentBoxOnYes(QuestionNumber),
     );
   }
 
@@ -755,30 +754,24 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
         var DelDatalength = DelData.length;
 
         for (var i = 0; i < DelDatalength; i++) {
-
-
           let CommentVal = "";
-          let item = await this.state.RichtextData.find(Data => Data.QuestionNumber === "DelComment" + DelData[i].QuestionNumber);
+          let item = await this.state.RichtextData.find(
+            (Data) =>
+              Data.QuestionNumber === "DelComment" + DelData[i].QuestionNumber,
+          );
 
-   
-
-          if(item){
-            
+          if (item) {
             CommentVal = item == undefined ? "" : item.Comment;
-          }
-          else{
+          } else {
             CommentVal = "";
           }
-
 
           var ID = DelData[i].QuestionNumber;
           var QuestionNumber = DelData[i].QuestionNumber;
           var Answer = $("#Answer" + [ID]).val();
-          var DelComment = CommentVal
+          var DelComment = CommentVal;
           var DelCommentErr = $("#DelCommentErr" + [ID]);
           var CRQuestionErr = $("#CRQuestionErr" + [ID]);
-
-
 
           if (Answer !== "Select") {
             CRQuestionErr.hide();
@@ -791,17 +784,16 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
                 isvalid = false;
                 window.stop();
               } else {
-
-               item.Comment = '';
+                //    item.Comment = '';
                 DelCommentErr.hide();
               }
             }
 
             if (
               DelData[i].Requirement.toLowerCase() ==
-              "IfYesNoCommentYes".toLowerCase() 
+              "IfYesNoCommentYes".toLowerCase()
             ) {
-              if (Answer === "No" && DelComment === "" ) {
+              if (Answer === "No" && DelComment === "") {
                 DelCommentErr.show();
                 isvalid = false;
                 window.stop();
@@ -823,7 +815,6 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
               }
             }
 
-
             if (
               DelData[i].Requirement.toLowerCase() ==
               "IfYesComment".toLowerCase()
@@ -833,7 +824,7 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
                 isvalid = false;
                 window.stop();
               } else {
-                item.Comment = '';
+                //   item.Comment = '';
                 DelCommentErr.hide();
               }
             }
@@ -910,7 +901,7 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
   }
 
   private async DelSubmitData2() {
-    console.log("DelSubmitData2 start: ",this.state.RichtextData);
+    console.log("DelSubmitData2 start: ", this.state.RichtextData);
     let commentdata = [];
 
     commentdata = this.state.RichtextData;
@@ -922,14 +913,7 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
       .items.filter(filterStr)
       .get()
       .then(async (feedbacks) => {
-
-
-
-
         if (feedbacks.length == 0) {
-
-
-
           this.webURL.lists
             .getByTitle("FeedbackQuestions")
             .items.filter("Team eq 'Delivery'")
@@ -937,26 +921,25 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
             .then(async (DelData) => {
               var DelDatalength = DelData.length;
               for (var i = 0; i < DelDatalength; i++) {
-
                 var ID = DelData[i].QuestionNumber;
                 var Title = $("#Question" + [ID])[0].innerHTML;
                 var Answer = $("#Answer" + [ID]).val();
                 var Qnumber = DelData[i].QuestionNumber;
 
-
-                let Deltextcommemntelement = '';
+                let Deltextcommemntelement = "";
                 let matchvalue = "DelComment" + DelData[i].QuestionNumber;
                 for (let i = 0; i < commentdata.length; i++) {
                   if (commentdata[i].QuestionNumber === matchvalue) {
                     Deltextcommemntelement = commentdata[i].Comment;
-                    break;  // Exit the loop once the matching item is found
+                    break; // Exit the loop once the matching item is found
                   }
                 }
-              
-               let  DelComment = Deltextcommemntelement ? Deltextcommemntelement : '';     
+
+                let DelComment = Deltextcommemntelement
+                  ? Deltextcommemntelement
+                  : "";
 
                 if (Answer !== undefined && DelComment !== undefined) {
-
                   this.webURL.lists.getByTitle("DeliveryFeedback").items.add({
                     Title: Title,
                     ProjectID: itemID,
@@ -967,7 +950,6 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
                     FeedbackStatus: "Submit",
                   });
                 } else {
-              
                 }
               }
             })
@@ -1072,28 +1054,31 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
               }
             })
             .then(() => {
-              this.webURL.getByTitle("FeedbackQuestions").items.filter("Team eq 'Delivery'").get().then((DelData2) => {
+              this.webURL
+                .getByTitle("FeedbackQuestions")
+                .items.filter("Team eq 'Delivery'")
+                .get()
+                .then((DelData2) => {
                   var Deliverydatalength = DelData2.length;
                   for (var i = 0; i < Deliverydatalength; i++) {
-
-
                     var ID = DelData2[i].QuestionNumber;
                     var Title = $("#Question" + [ID])[0].innerHTML;
                     var Answer = $("#Answer" + [ID]).val();
                     var Qnumber = DelData2[i].QuestionNumber;
                     let web = Web(this.props.webURL);
 
-
-                    let Deltextcommemntelement = '';
+                    let Deltextcommemntelement = "";
                     let matchvalue = "DelComment" + DelData2[i].QuestionNumber;
                     for (let i = 0; i < commentdata.length; i++) {
                       if (commentdata[i].QuestionNumber === matchvalue) {
                         Deltextcommemntelement = commentdata[i].Comment;
-                        break;  // Exit the loop once the matching item is found
+                        break; // Exit the loop once the matching item is found
                       }
                     }
-                    
-                   let DelComment = Deltextcommemntelement ? Deltextcommemntelement : '';
+
+                    let DelComment = Deltextcommemntelement
+                      ? Deltextcommemntelement
+                      : "";
 
                     web.lists.getByTitle("DeliveryFeedback").items.add({
                       Title: Title,
@@ -1211,19 +1196,17 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
         var DelDatalength = DelData.length;
 
         for (var i = 0; i < DelDatalength; i++) {
-
-
-
           let CommentVal = "";
-          let item = await this.state.RichtextData.find(Data => Data.QuestionNumber === "DelComment" + DelData[i].QuestionNumber);
+          let item = await this.state.RichtextData.find(
+            (Data) =>
+              Data.QuestionNumber === "DelComment" + DelData[i].QuestionNumber,
+          );
 
-          if(item){
+          if (item) {
             CommentVal = item == undefined ? "" : item.Comment;
-          }
-          else{
+          } else {
             CommentVal = "";
           }
-
 
           var ID = DelData[i].QuestionNumber;
           var Answer = $("#Answer" + [ID]).val();
@@ -1238,11 +1221,10 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
               isvalid = false;
               window.stop();
             } else {
-              item.Comment = '';
+              //  item.Comment = '';
               DelCommentErr.hide();
             }
           }
-
 
           if (
             DelData[i].Requirement.toLowerCase() ==
@@ -1270,7 +1252,6 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
             }
           }
 
-
           if (
             DelData[i].Requirement.toLowerCase() == "IfYesComment".toLowerCase()
           ) {
@@ -1279,7 +1260,7 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
               isvalid = false;
               window.stop();
             } else {
-              item.Comment = '';
+              // item.Comment = '';
               DelCommentErr.hide();
             }
           }
@@ -1331,7 +1312,6 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
   }
 
   private async DelDraft2() {
-
     let commentdata = [];
 
     commentdata = this.state.RichtextData;
@@ -1351,26 +1331,23 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
             .then(async (DelData) => {
               var DelDatalength = DelData.length;
               for (var i = 0; i < DelDatalength; i++) {
-
-
-
                 var ID = DelData[i].QuestionNumber;
                 var Title = $("#Question" + [ID])[0].innerHTML;
                 var Answer = $("#Answer" + [ID]).val();
                 var Qnumber = DelData[i].QuestionNumber;
 
-
-                
-                let Deltextcommemntelement = '';
+                let Deltextcommemntelement = "";
                 let matchvalue = "DelComment" + DelData[i].QuestionNumber;
                 for (let i = 0; i < commentdata.length; i++) {
                   if (commentdata[i].QuestionNumber === matchvalue) {
                     Deltextcommemntelement = commentdata[i].Comment;
-                    break;  // Exit the loop once the matching item is found
+                    break; // Exit the loop once the matching item is found
                   }
                 }
-                
-               let DelComment = Deltextcommemntelement ? Deltextcommemntelement : '';
+
+                let DelComment = Deltextcommemntelement
+                  ? Deltextcommemntelement
+                  : "";
 
                 this.webURL.lists.getByTitle("DeliveryFeedback").items.add({
                   Title: Title,
@@ -1413,23 +1390,23 @@ private ShowCommentBoxOnYesNo2(QuestionNumber) {
                 .then(async (DelData2) => {
                   var Deliverydatalength = DelData2.length;
                   for (var i = 0; i < Deliverydatalength; i++) {
-
-
                     var ID = DelData2[i].QuestionNumber;
                     var Title = $("#Question" + [ID])[0].innerHTML;
                     var Answer = $("#Answer" + [ID]).val();
                     var Qnumber = DelData2[i].QuestionNumber;
 
-                    let Deltextcommemntelement = '';
+                    let Deltextcommemntelement = "";
                     let matchvalue = "DelComment" + DelData2[i].QuestionNumber;
                     for (let i = 0; i < commentdata.length; i++) {
                       if (commentdata[i].QuestionNumber === matchvalue) {
                         Deltextcommemntelement = commentdata[i].Comment;
-                        break;  // Exit the loop once the matching item is found
+                        break; // Exit the loop once the matching item is found
                       }
                     }
-                    
-                   let DelComment = Deltextcommemntelement ? Deltextcommemntelement : '';
+
+                    let DelComment = Deltextcommemntelement
+                      ? Deltextcommemntelement
+                      : "";
 
                     this.webURL.lists.getByTitle("DeliveryFeedback").items.add({
                       Title: Title,
