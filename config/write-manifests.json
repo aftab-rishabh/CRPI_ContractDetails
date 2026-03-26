@@ -1,0 +1,4 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/write-manifests.schema.json",
+  "cdnBasePath": "https://rishabhsoft0.sharepoint.com/sites/demo/SiteAssets/Spfx_CDN/"
+}

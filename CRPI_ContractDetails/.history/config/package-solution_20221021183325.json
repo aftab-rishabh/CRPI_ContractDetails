@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "crpi-new-client-side-solution",
+    "id": "41408d08-f6c1-4919-bbbf-422c814f668d",
+    "version": "1.0.0.41",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.15.0"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "CRPI_New description"
+      },
+      "longDescription": {
+        "default": "CRPI_New description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "crpi-new Feature",
+        "description": "The feature that activates elements of the crpi-new solution.",
+        "id": "755d12fc-91ef-4a4c-b702-5f9da6495fd7",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/crpi-new.sppkg"
+  }
+}

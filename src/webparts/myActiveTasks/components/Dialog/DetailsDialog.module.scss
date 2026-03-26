@@ -1,0 +1,30 @@
+.detailsGrid {  
+    display: grid;  
+    grid-template-columns: 50% 70%;  
+}
+.tabContainer{
+    border: 1px solid #4672c4;
+    border-top: none;
+    border-top-right-radius: 21px;
+    border-top-left-radius: 71px;
+
+.divTableHeader{
+  color:white;
+  background-color:  #4672c4;
+}
+
+  .divTable {
+    display: table;
+    padding: 5px;
+}
+.divTableRow {
+    display: table-row;
+    padding: 5px;
+}
+.divTableCell {
+    display: table-cell;
+    padding: 5px;
+    border: #4672c4 solid 1px;
+    margin: 5px;
+}
+}

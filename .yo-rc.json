@@ -1,0 +1,16 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "plusBeta": false,
+    "isCreatingSolution": false,
+    "version": "1.15.0",
+    "libraryName": "crpi-new",
+    "libraryId": "41408d08-f6c1-4919-bbbf-422c814f668d",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "CRPI_New",
+    "solutionShortDescription": "CRPI_New description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

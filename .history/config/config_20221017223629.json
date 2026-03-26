@@ -1,0 +1,55 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "contract-details-new-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contractDetailsNew/ContractDetailsNewWebPart.js",
+          "manifest": "./src/webparts/contractDetailsNew/ContractDetailsNewWebPart.manifest.json"
+        }
+      ]
+    },
+    "chatbox-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/chatbox/ChatboxWebPart.js",
+          "manifest": "./src/webparts/chatbox/ChatboxWebPart.manifest.json"
+        }
+      ]
+    },
+    "view-contracts-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/viewContracts/ViewContractsWebPart.js",
+          "manifest": "./src/webparts/viewContracts/ViewContractsWebPart.manifest.json"
+        }
+      ]
+    },
+    "my-active-tasks-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/myActiveTasks/MyActiveTasksWebPart.js",
+          "manifest": "./src/webparts/myActiveTasks/MyActiveTasksWebPart.manifest.json"
+        }
+      ]
+    },
+    "contract-approval-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/contractApproval/ContractApprovalWebPart.js",
+          "manifest": "./src/webparts/contractApproval/ContractApprovalWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "ContractDetailsNewWebPartStrings": "lib/webparts/contractDetailsNew/loc/{locale}.js",
+    "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js",
+    "ChatboxWebPartStrings": "lib/webparts/chatbox/loc/{locale}.js",
+    "ViewContractsWebPartStrings": "lib/webparts/viewContracts/loc/{locale}.js",
+    "MyActiveTasksWebPartStrings": "lib/webparts/myActiveTasks/loc/{locale}.js",
+    "ContractApprovalWebPartStrings": "lib/webparts/contractApproval/loc/{locale}.js"
+  }
+}

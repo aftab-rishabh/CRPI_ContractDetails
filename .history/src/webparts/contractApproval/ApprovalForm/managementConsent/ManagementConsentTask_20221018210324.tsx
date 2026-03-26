@@ -1,0 +1,269 @@
+import * as React from 'react';
+
+import styles from './ManagementConsentTaskFormWebPart.module.scss';
+
+import {  PrimaryButton } from 'office-ui-fabric-react';
+import { Web } from "@pnp/sp/presets/all";
+import "@pnp/sp/lists";
+import "@pnp/sp/items";
+import { Label } from 'office-ui-fabric-react';
+import { SPComponentLoader } from '@microsoft/sp-loader';
+import * as $ from 'jquery';
+import * as moment from 'moment';
+require('.././css/jquery-ui.css');
+let cssURL = "https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css";
+SPComponentLoader.loadCss(cssURL);
+SPComponentLoader.loadScript("https://ajax.aspnetcdn.com/ajax/4.0/1/MicrosoftAjax.js");
+/**
+ * Icon styles. Feel free to change them
+ */
+
+
+export interface IManagementConsentTaskProps {
+  defaultCollapsed?: boolean;
+  className?: string;
+  webURL: string;
+}
+
+export interface IManagementConsentTaskState {
+  expanded: boolean;
+  Items: any;
+  HTML: any;
+}
+
+// const collapsedIcon: IIconProps = { iconName: 'ChevronRight', className: styles.FeedbackChevron };
+// const expandedIcon: IIconProps = { iconName: 'ChevronDown', className: styles.FeedbackChevron };
+
+export class ManagementConsentTask extends React.Component<IManagementConsentTaskProps, IManagementConsentTaskState> {
+  ContractStatus = "";
+  webURL:any="";
+  constructor(props: IManagementConsentTaskProps) {
+    super(props);
+
+    this.state = {
+      expanded: props.defaultCollapsed == null ? false : !props.defaultCollapsed,
+      Items: [],
+      HTML: []
+    };
+  }
+  public componentDidMount() {
+    this.webURL = Web(this.props.webURL);
+    this.setForm();
+    this.viewItem();
+  }
+  public render(): React.ReactElement<IManagementConsentTaskProps> {
+    return (
+      <div className={styles.ManagementConsentTaskForm}>
+        <div className={styles.container}>
+          <div className={styles.row} >
+
+            <div id="managementConsent" style={{ display: 'none' }}>
+
+              <div className={styles.sectionblockConsent}>
+                <Label className={styles.headersConsent}><u>Consent For Unsigned Contract</u></Label>
+              </div>
+              <div >
+                <Label className={styles.viewlable1}>Comments from CM:</Label>
+                <Label className="CommentCM"></Label>
+              </div><br></br>
+
+              <div className="">
+                <Label className={styles.viewlable1}>Signed Contract will be received by:</Label>
+                <Label className="SignedDate"></Label>
+              </div><br></br>
+
+
+              <Label className={styles.viewlable1}>Rejection/Approval Comments:<span className={styles.estric}>*</span>
+              </Label><br />
+              <textarea className={styles.form_control} style={{ width: '50%' }} placeholder="Comment" id="MgtCommentsUnsigned" rows={4}></textarea><br></br>
+              <label id="MgtErr" style={{ display: 'none', color: 'red' }} className="error" >Please add
+                comments.</label><br /><br />
+            </div>
+
+
+            <div id="loader" className={styles.modal} >
+              <div className="">
+                <div className={styles.loader} style={{ margin: '200px auto' }}></div>
+              </div>
+            </div>
+
+
+            <div id="ApproveModal" className={styles.modal}>
+              <div className={styles.modalcontent}>
+                <span className={styles.close} onClick={() => this.Close0()}>
+                  &times;
+                </span>
+                <Label className={styles.header2}>Approved to start without signed contract from customer!</Label>
+              </div>
+            </div>
+
+
+
+            <div id="RejectModal" className={styles.modal}>
+              <div className={styles.modalcontent}>
+                <span className={styles.close} onClick={() => this.Close1()}>
+                  &times;
+                </span>
+                <Label className={styles.header2}>Rejected to start without signed contract from customer!</Label>
+              </div>
+            </div>
+
+
+
+            <div className="row">
+              <div className="col col-lg-12">
+                <div className={styles.form_footer}>
+                  <PrimaryButton text="Approve" className={styles.btn} style={{ borderRadius: "10px", marginRight: "10px" }} id="Approve" onClick={() => this.Approve()} ></PrimaryButton>
+
+                  <PrimaryButton text="Reject" className={styles.btn} id="Reject" style={{ borderRadius: "10px" }} onClick={() => this.Reject()}></PrimaryButton>
+                </div></div></div>
+
+
+
+
+          </div>
+        </div>
+      </div>
+
+    );
+  }
+
+
+
+  private viewItem(): void {
+
+    const itemID = new URLSearchParams(window.location.search).get('itemid');
+    this.webURL.lists.getByTitle("Projects").items.getById(parseInt(itemID)).select('*', 'AccountManager/Title', 'ProjectManager/Title').expand('ProjectManager/Id', 'AccountManager/Id').get().then((item) => {
+      $('.CommentCM').text(item.KeyPointersToStWithoutContract);
+      $('.SignedDate').text(moment(item.ExpectedContractSignDueDt).format('LL'));
+
+    });
+  }
+
+
+  private Approve() {
+
+    let isvalid = true;
+
+    if ($("#MgtComments").val() === "") {
+      $("#MgtErr").show();
+      isvalid = false;
+    }
+    else
+      $("#MgtErr").hide();
+
+    if (isvalid) {
+      this.Approve1();
+    }
+
+  }
+
+  private Approve1(): void {
+    const itemID = new URLSearchParams(window.location.search).get('itemid');
+    let today = new Date();
+    let date = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + (today.getDate() + 1);
+    let time = today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    let DueDateTime = date + ' | ' + time;
+
+    let commentcheck = $("#MgtCommentsUnsigned").val().toString();
+    this.webURL.lists.getByTitle("Projects")
+      .items.getById(parseInt(itemID)).update({
+        'Status': `CM Documents Upload Awaited`,
+        DueDateTime: DueDateTime,
+        'MgtComment4Unsigned': commentcheck,
+        'WithoutAnyAmendments': "NA",
+        'DetailsOfAmendment': "NA",
+        'AmendmentComment': "NA"
+      }).then(i => {
+        this.webURL.lists.getByTitle('CompleteTask').items.add({
+          ProjectID: parseInt(itemID),
+          TaskType: "Management"
+        }).then(j => {
+          this.webURL.lists.getByTitle('CompleteTask').items.add({
+            ProjectID: parseInt(itemID),
+            TaskType: "Marketing"
+          }).then(s => {
+            $("#loader").show();
+            setTimeout(() => { $('#loader').hide(); }, 3000);
+            setTimeout(() => { $('#ApproveModal').show(); }, 3500);
+          });
+        });
+      });
+  }
+
+  private Reject() {
+    let isvalid = true;
+
+    if ($("#MgtCommentsUnsigned").val() === "") {
+      $("#MgtErr").show();
+      isvalid = false;
+    }
+    else
+      $("#MgtErr").hide();
+    if (isvalid) {
+      this.Reject2();
+    }
+  }
+
+  private Reject2(): void {
+    const itemID = new URLSearchParams(window.location.search).get('itemid');
+    this.webURL.lists.getByTitle("Projects")
+      .items.getById(parseInt(itemID)).update({
+        'Status': `Rejected To Start Without Contract`,
+        MgtComment4Unsigned: $("#MgtCommentsUnsigned").val().toString(),
+      }).then(i => {
+        this.webURL.lists.getByTitle('CompleteTask').items.add({
+          ProjectID: parseInt(itemID),
+          TaskType: "Management"
+        }).then(j => {
+          this.webURL.lists.getByTitle('CompleteTask').items.add({
+            ProjectID: parseInt(itemID),
+            TaskType: "Marketing"
+          }).then(newListItem => {
+            $("#loader").show();
+            setTimeout(() => { $('#loader').hide(); }, 3000);
+            setTimeout(() => { $('#RejectModal').show(); }, 3500);
+          });
+        });
+      });
+  }
+
+
+
+  private setForm() {
+
+    const itemID = new URLSearchParams(window.location.search).get('itemid');
+    this.webURL.lists.getByTitle("Projects").items.getById(parseInt(itemID)).select('Id', 'Status', 'OpportunityID').get().then((data) => {
+
+      if (data.Status == "Management Approval Awaited to Start Without Signed Contract") {
+        document.getElementById("managementConsent").style.display = "block";
+      }
+    });
+  }
+
+
+  private Close0() {
+    let modal = document.getElementById("ApproveModal");
+    let hostUrl = this.props.webURL;
+    modal.style.display = "none";
+    $('#managementConsent').fadeOut(2500);
+    setTimeout(() => { window.parent.location.href = hostUrl; }, 1000);
+  }
+  private Close1() {
+    let modal = document.getElementById("RejectModal");
+    let hostUrl = this.props.webURL;
+    modal.style.display = "none";
+    $('#managementConsent').fadeOut(2500);
+    setTimeout(() => { window.parent.location.href = hostUrl; }, 1000);
+
+  }
+
+
+
+
+
+
+
+}
+
+
